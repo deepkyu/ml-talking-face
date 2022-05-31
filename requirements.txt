@@ -1,0 +1,6 @@
+gradio
+jinja2
+googletrans==4.0.0-rc1
+PyYAML
+opencv-python
+google-cloud-translate

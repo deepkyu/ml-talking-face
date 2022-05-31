@@ -1,0 +1,13 @@
+.DS_Store
+flagged/
+__pycache__/
+.vscode/
+output_file/*
+
+!output_file/.gitkeep
+
+*.mp4
+*.png
+!background_image/*
+*.mkv
+gradio_queue.db*

@@ -1,0 +1,20 @@
+ko:
+  index: 1
+  language: "Korean"
+  locale: "ko_KR"
+  google_dest: "ko"
+en:
+  index: 2
+  language: "English"
+  locale: "en_US"
+  google_dest: "en"
+ja:
+  index: 3
+  language: "Japanese"
+  locale: "ja_JP"
+  google_dest: "ja"
+zh:
+  index: 4
+  language: "Chinese"
+  locale: "zh_CN"
+  google_dest: "zh-CN"
