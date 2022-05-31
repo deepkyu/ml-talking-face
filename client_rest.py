@@ -5,6 +5,7 @@ import argparse
 
 VIDEO_WIDTH = 1080
 VIDEO_HEIGHT = 1920
+SPEAKER_ID = 0
 
 class RestAPIApplication:
     def __init__(self, ip, port):
@@ -23,7 +24,7 @@ class RestAPIApplication:
         request_form = dict()
 
         request_form['text'] = text
-        request_form['speaker'] = 0
+        request_form['speaker'] = SPEAKER_ID
         request_form['width'] = VIDEO_WIDTH
         request_form['height'] = VIDEO_HEIGHT
 
@@ -35,7 +36,7 @@ class RestAPIApplication:
             background_base64 = ""
         
         request_form['background'] = background_base64
-        request_form['durationRate'] = 1.0
+        request_form['durationRate'] = duration_rate
         request_form['isVideoBackground'] = is_video_background
         request_form['lang'] = lang
 
