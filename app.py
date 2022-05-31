@@ -148,38 +148,38 @@ class GradioApplication:
 
 
 def prepare_input():
-    text_input = gr.inputs.Textbox(lines=2,
-                                   placeholder="Type your text with English, Chinese, Korean, and Japanese.",
-                                   default="Hello, this is demonstration for talking face generation "
-                                   "with multilingual text-to-speech.",
-                                   label="Text")
-    lang_input = gr.inputs.Radio(['Korean', 'English', 'Japanese', 'Chinese'],
-                                 type='value',
-                                 default=None,
-                                 label="Language")
-    duration_rate_input = gr.inputs.Slider(minimum=0.8,
-                                           maximum=1.2,
-                                           step=0.01,
-                                           default=1.0,
-                                           label="Duration (The bigger the value, the slower it pronounces)")
-    start_padding_input = gr.inputs.Slider(minimum=0.0,
-                                           maximum=2.0,
-                                           step=0.1,
-                                           default=0.0,
-                                           label="Start padding (s)")
-    end_padding_input = gr.inputs.Slider(minimum=0.0,
-                                         maximum=2.0,
-                                         step=0.1,
-                                         default=0.0,
-                                         label="End padding (s)")
-    action_input = gr.inputs.Radio(['Default', 'Hand', 'BothHand', 'HandDown', 'Sorry'],
-                                    type='value',
-                                    default='Default',
-                                    label="Select an action...")
-    background_input = gr.inputs.Radio(['None', 'CVPR', 'Black', 'River', 'Sky'],
-                                        type='index',
-                                        default='None',
-                                        label="Background image")
+    text_input = gr.Textbox(lines=2,
+                            placeholder="Type your text with English, Chinese, Korean, and Japanese.",
+                            value="Hello, this is demonstration for talking face generation "
+                            "with multilingual text-to-speech.",
+                            label="Text")
+    lang_input = gr.Radio(['Korean', 'English', 'Japanese', 'Chinese'],
+                          type='value',
+                          value=None,
+                          label="Language")
+    duration_rate_input = gr.Slider(minimum=0.8,
+                                    maximum=1.2,
+                                    step=0.01,
+                                    value=1.0,
+                                    label="Duration (The bigger the value, the slower it pronounces)")
+    start_padding_input = gr.Slider(minimum=0.0,
+                                    maximum=2.0,
+                                    step=0.1,
+                                    value=0.0,
+                                    label="Start padding (s)")
+    end_padding_input = gr.Slider(minimum=0.0,
+                                  maximum=2.0,
+                                  step=0.1,
+                                  value=0.0,
+                                  label="End padding (s)")
+    action_input = gr.Radio(['Default', 'Hand', 'BothHand', 'HandDown', 'Sorry'],
+                            type='value',
+                            value='Default',
+                            label="Select an action ...")
+    background_input = gr.Radio(['None', 'CVPR', 'Black', 'River', 'Sky'],
+                                type='index',
+                                value='None',
+                                label="Select a background image/video ...")
 
     return [text_input, lang_input,
             duration_rate_input, start_padding_input, end_padding_input,
@@ -187,10 +187,10 @@ def prepare_input():
 
 
 def prepare_output():
-    translation_result_otuput = gr.outputs.Textbox(type="str",
+    translation_result_otuput = gr.Textbox(type="str",
                                                    label="Translation Result")
 
-    video_output = gr.outputs.Video(format='mp4')
+    video_output = gr.Video(format='mp4')
     return [translation_result_otuput, video_output]
 
 
