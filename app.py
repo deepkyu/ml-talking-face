@@ -131,7 +131,7 @@ class GradioApplication:
                                                      background_data, is_video_background)
         print(len(video_data))
 
-        video_filename = self.output_dir / f"{self._file_seed:02d}.mp4"
+        video_filename = self.output_dir / f"{self._file_seed:02d}.mkv"
         with open(video_filename, "wb") as video_file:
             video_file.write(video_data)
         
@@ -190,7 +190,7 @@ def prepare_output():
     translation_result_otuput = gr.outputs.Textbox(type="str",
                                                    label="Translation Result")
 
-    video_output = gr.outputs.Video()
+    video_output = gr.outputs.Video(format='mp4')
     return [translation_result_otuput, video_output]
 
 
