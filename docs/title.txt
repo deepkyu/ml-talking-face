@@ -1,1 +1,1 @@
-Talking Face Generation with Multilingual TTS
+Talking Face Generation with Multilingual TTS (CVPR 2022 Demo Track)

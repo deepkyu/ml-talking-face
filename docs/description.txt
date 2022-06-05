@@ -1,4 +1,5 @@
-CVPR 2022 Demo Track (Round 1) #8 | 
 This system generates talking face video with corresponding text. 
 You can input text with one of four languages, which are Chinese, English, Japanese, and Korean. 
 If your text language and target language is different, it translates the sentence into target language with Google Translation API.
+
+(2022.06.05.) Due to the latency from HuggingFace Spaces and video rendering, it takes 15 ~ 30 seconds to get a video result.
