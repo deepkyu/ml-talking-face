@@ -1,5 +1,6 @@
-This system generates talking face video with corresponding text. 
-You can input text with one of four languages, which are Chinese, English, Japanese, and Korean. 
-If your text language and target language is different, it translates the sentence into target language with Google Translation API.
+This system generates a talking face video based on the input text.
+You can provide the input text in one of the four languages: Chinese (Mandarin), English, Japanese, and Korean.
+You may also select the target language, the language of the output speech.
+If the input text language and the target language are different, the input text will be translated to the target language using Google Translate API. 
 
 (2022.06.05.) Due to the latency from HuggingFace Spaces and video rendering, it takes 15 ~ 30 seconds to get a video result.
