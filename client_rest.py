@@ -20,7 +20,7 @@ class RestAPIApplication:
             self.generate_addr = (lambda id_: f'http://{ip}:{port}/generate/{id_}')
 
     @staticmethod
-    def _get_json_request(text, lang, duration_rate, pad_begin, pad_end, action, background_data=None, is_video_background=False):
+    def _get_json_request(text, lang, duration_rate, action, background_data=None, is_video_background=False):
         request_form = dict()
 
         request_form['text'] = text
@@ -47,8 +47,8 @@ class RestAPIApplication:
     def _get_video_id(results):
         return json.loads(bytes.decode(results.content))['id']
 
-    def get_video(self, text, lang, duration_rate, pad_begin, pad_end, action, background_data=None, is_video_background=False):
-        request_json = self._get_json_request(text, lang, duration_rate, pad_begin, pad_end, action, background_data, is_video_background)
+    def get_video(self, text, lang, duration_rate, action, background_data=None, is_video_background=False):
+        request_json = self._get_json_request(text, lang, duration_rate, action, background_data, is_video_background)
         
         # POST request with jsonified request
         results = requests.post(self.post_request_addr, headers=self.post_headers, data=request_json)

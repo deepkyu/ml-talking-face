@@ -119,7 +119,7 @@ class GradioApplication:
 
         return background_data, is_video_background
 
-    def infer(self, text, lang, duration_rate, pad_begin, pad_end, action, background_index):
+    def infer(self, text, lang, duration_rate, action, background_index):
         self._counter_file_seed()
         print(f"File Seed: {self._file_seed}")
         target_text, lang_dest = self.translator.get_translation(text, lang)
@@ -127,7 +127,7 @@ class GradioApplication:
 
         background_data, is_video_background = self.get_background_data(background_index)
         
-        video_data = self.rest_application.get_video(target_text, lang_rpc_code, duration_rate, pad_begin, pad_end, action.lower(),
+        video_data = self.rest_application.get_video(target_text, lang_rpc_code, duration_rate, action.lower(),
                                                      background_data, is_video_background)
         print(len(video_data))
 
@@ -161,17 +161,7 @@ def prepare_input():
                                     maximum=1.2,
                                     step=0.01,
                                     value=1.0,
-                                    label="Duration (The bigger the value, the slower it pronounces)")
-    start_padding_input = gr.Slider(minimum=0.0,
-                                    maximum=2.0,
-                                    step=0.1,
-                                    value=0.0,
-                                    label="Start padding (s)")
-    end_padding_input = gr.Slider(minimum=0.0,
-                                  maximum=2.0,
-                                  step=0.1,
-                                  value=0.0,
-                                  label="End padding (s)")
+                                    label="Duration (The bigger the value, the slower the speech)")
     action_input = gr.Radio(['Default', 'Hand', 'BothHand', 'HandDown', 'Sorry'],
                             type='value',
                             value='Default',
@@ -181,8 +171,7 @@ def prepare_input():
                                 value='None',
                                 label="Select a background image/video ...")
 
-    return [text_input, lang_input,
-            duration_rate_input, start_padding_input, end_padding_input,
+    return [text_input, lang_input, duration_rate_input,
             action_input, background_input]
 
 
