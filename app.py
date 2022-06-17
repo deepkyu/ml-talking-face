@@ -7,55 +7,19 @@ TRANSLATION_APIKEY_URL = os.environ['TRANSLATION_APIKEY_URL']
 GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 subprocess.call(f"wget --no-check-certificate -O {GOOGLE_APPLICATION_CREDENTIALS} {TRANSLATION_APIKEY_URL}", shell=True)
 
+TOXICITY_THRESHOLD = float(os.getenv('TOXICITY_THRESHOLD', 0.7))
+
 import gradio as gr
+from toxicity_estimator import PerspectiveAPI
+from translator import Translator
 from client_rest import RestAPIApplication
 from pathlib import Path
 import argparse
 import threading
-from translator import GoogleAuthTranslation
 import yaml
 
 TITLE = Path("docs/title.txt").read_text()
-DESCRIPTION = Path("docs/description.txt").read_text()
-
-class Translator:
-    def __init__(self, yaml_path='lang.yaml'):
-        self.google_translation = GoogleAuthTranslation(project_id="cvpr-2022-demonstration")
-        with open(yaml_path) as f:
-            self.supporting_languages = yaml.load(f, Loader=yaml.FullLoader)
-            
-    def _get_text_with_lang(self, text, lang):
-        lang_detected = self.google_translation.detect(text)
-        print(lang_detected, lang)
-        if lang is None:
-            lang = lang_detected
-            
-        if lang != lang_detected:
-            target_text = self.google_translation.translate(text, lang=lang)
-        else:
-            target_text = text
-            
-        return target_text, lang
-    
-    def _convert_lang_from_index(self, lang):
-        lang_finder = [name for name in self.supporting_languages
-                        if self.supporting_languages[name]['language'] == lang]
-        if len(lang_finder) == 1:
-            lang = lang_finder[0]
-        else:
-            raise AssertionError(f"Given language index can't be understood! | lang: {lang}")
-        
-        return lang
-
-    def get_translation(self, text, lang, use_translation=True):
-        lang_ = self._convert_lang_from_index(lang)
-        
-        if use_translation:
-            target_text, _ = self._get_text_with_lang(text, lang_)
-        else:
-            target_text = text
-
-        return target_text, lang 
+DESCRIPTION = Path("docs/description.md").read_text()
     
     
 class GradioApplication:
@@ -72,6 +36,7 @@ class GradioApplication:
                                 "background_image/river.mp4",
                                 "background_image/sky.mp4"]
         
+        self.perspective_api = PerspectiveAPI()
         self.translator = Translator()
         self.rest_application = RestAPIApplication(rest_ip, rest_port)
         self.output_dir = Path("output_file")
@@ -118,24 +83,49 @@ class GradioApplication:
             is_video_background = False
 
         return background_data, is_video_background
+    
+    @staticmethod
+    def return_format(toxicity_prob, target_text, lang_dest, video_filename):
+        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: \n{target_text}", str(video_filename)   
 
     def infer(self, text, lang, duration_rate, action, background_index):
         self._counter_file_seed()
         print(f"File Seed: {self._file_seed}")
-        target_text, lang_dest = self.translator.get_translation(text, lang)
-        lang_rpc_code = self.get_lang_code(lang_dest)
+        toxicity_prob = 0.0
+        target_text = "(Sorry, it seems that the input text is too toxic.)"
+        lang_dest = ""
+        video_filename = "vacant.mp4"
+        
+        # Toxicity estimation
+        try:
+            toxicity_prob = self.perspective_api.get_score(text)
+        except Exception as e:  # when Perspective API doesn't work
+            pass
+        
+        if toxicity_prob > TOXICITY_THRESHOLD:
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename)
+        
+        # Google Translate API
+        try:
+            target_text, lang_dest = self.translator.get_translation(text, lang)
+            lang_rpc_code = self.get_lang_code(lang_dest)
+        except Exception as e:
+            target_text = f"Error from language translation: ({e})"
+            lang_dest = ""
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename)
 
+        # Video Inference
         background_data, is_video_background = self.get_background_data(background_index)
         
         video_data = self.rest_application.get_video(target_text, lang_rpc_code, duration_rate, action.lower(),
                                                      background_data, is_video_background)
-        print(len(video_data))
+        print(f"Video data size: {len(video_data)}")
 
         video_filename = self.output_dir / f"{self._file_seed:02d}.mkv"
         with open(video_filename, "wb") as video_file:
             video_file.write(video_data)
         
-        return f"Language: {lang_dest}\nText: \n{target_text}", str(video_filename)        
+        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: \n{target_text}", str(video_filename)        
 
     def run(self, server_port=7860, share=False):
         try:
@@ -176,11 +166,10 @@ def prepare_input():
 
 
 def prepare_output():
-    translation_result_otuput = gr.Textbox(type="str",
-                                                   label="Translation Result")
-
+    toxicity_output = gr.Label(num_top_classes=1, label="Toxicity (from Perspective API)")
+    translation_result_otuput = gr.Textbox(type="str", label="Translation Result")
     video_output = gr.Video(format='mp4')
-    return [translation_result_otuput, video_output]
+    return [toxicity_output, translation_result_otuput, video_output]
 
 
 def parse_args():

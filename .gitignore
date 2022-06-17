@@ -11,3 +11,4 @@ output_file/*
 !background_image/*
 *.mkv
 gradio_queue.db*
+!vacant.mp4

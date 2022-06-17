@@ -1,1 +1,1 @@
-from .v3 import GoogleAuthTranslation
+from .module import Translator

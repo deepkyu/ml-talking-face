@@ -36,7 +36,7 @@ class GoogleAuthTranslation:
             if self.supporting_languages[key]['google_dest'] == dest:
                 return key
         
-        raise RuntimeError(f"Detected langauge {dest} is not supported for TTS.")
+        raise RuntimeError(f"Detected langauge is not supported in our multilingual TTS. |\n Code: {dest} | See https://cloud.google.com/translate/docs/languages")
 
     def translate(self, query, lang):
 
