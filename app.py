@@ -25,10 +25,11 @@ DESCRIPTION = Path("docs/description.md").read_text()
 class GradioApplication:
     def __init__(self, rest_ip, rest_port, max_seed):
         self.lang_list = {
-            'Korean': 'ko_KR',
-            'English': 'en_US',
-            'Japanese': 'ja_JP',
-            'Chinese': 'zh_CN'
+            'ko': 'ko_KR',
+            'en': 'en_US',
+            'ja': 'ja_JP',
+            'zh': 'zh_CN',
+            'zh-CN': 'zh_CN'
         }
         self.background_list = [None,
                                 "background_image/cvpr.png",
@@ -85,14 +86,14 @@ class GradioApplication:
         return background_data, is_video_background
     
     @staticmethod
-    def return_format(toxicity_prob, target_text, lang_dest, video_filename):
-        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: \n{target_text}", str(video_filename)   
+    def return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=""):
+        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: {target_text}\nDetails: {detail}", str(video_filename)   
 
     def infer(self, text, lang, duration_rate, action, background_index):
         self._counter_file_seed()
         print(f"File Seed: {self._file_seed}")
         toxicity_prob = 0.0
-        target_text = "(Sorry, it seems that the input text is too toxic.)"
+        target_text = ""
         lang_dest = ""
         video_filename = "vacant.mp4"
         
@@ -103,16 +104,24 @@ class GradioApplication:
             pass
         
         if toxicity_prob > TOXICITY_THRESHOLD:
-            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename)
+            detail = "Sorry, it seems that the input text is too toxic."
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=detail)
         
         # Google Translate API
         try:
             target_text, lang_dest = self.translator.get_translation(text, lang)
-            lang_rpc_code = self.get_lang_code(lang_dest)
         except Exception as e:
-            target_text = f"Error from language translation: ({e})"
+            target_text = ""
             lang_dest = ""
-            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename)
+            detail = f"Error from language translation: ({e})"
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=detail)
+        
+        try:
+            self.translator.length_check(lang_dest, target_text)  # assertion check
+        except AssertionError as e:
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=str(e))
+            
+        lang_rpc_code = self.get_lang_code(lang_dest)
 
         # Video Inference
         background_data, is_video_background = self.get_background_data(background_index)
@@ -125,7 +134,7 @@ class GradioApplication:
         with open(video_filename, "wb") as video_file:
             video_file.write(video_data)
         
-        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: \n{target_text}", str(video_filename)        
+        return self.return_format(toxicity_prob, target_text, lang_dest, video_filename)     
 
     def run(self, server_port=7860, share=False):
         try:
