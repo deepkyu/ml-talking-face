@@ -87,7 +87,7 @@ class GradioApplication:
     
     @staticmethod
     def return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=""):
-        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: {target_text}\nDetails: {detail}", str(video_filename)   
+        return {'Toxicity': toxicity_prob}, f"Language: {lang_dest}\nText: {target_text}\n-\nDetails: {detail}", str(video_filename)   
 
     def infer(self, text, lang, duration_rate, action, background_index):
         self._counter_file_seed()
@@ -105,7 +105,7 @@ class GradioApplication:
         
         if toxicity_prob > TOXICITY_THRESHOLD:
             detail = "Sorry, it seems that the input text is too toxic."
-            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=detail)
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=f"Error: {detail}")
         
         # Google Translate API
         try:
@@ -114,12 +114,12 @@ class GradioApplication:
             target_text = ""
             lang_dest = ""
             detail = f"Error from language translation: ({e})"
-            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=detail)
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=f"Error: {detail}")
         
         try:
             self.translator.length_check(lang_dest, target_text)  # assertion check
         except AssertionError as e:
-            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=str(e))
+            return self.return_format(toxicity_prob, target_text, lang_dest, video_filename, detail=f"Error: {str(e)}")
             
         lang_rpc_code = self.get_lang_code(lang_dest)
 
