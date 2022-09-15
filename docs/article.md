@@ -14,12 +14,10 @@ Recent studies in talking face generation have focused on building a train-once-
 
 [CVPR Open Access](https://openaccess.thecvf.com/content/CVPR2022/html/Song_Talking_Face_Generation_With_Multilingual_TTS_CVPR_2022_paper.html) [arXiv](https://arxiv.org/abs/2205.06421)
 
-### CVPR 2022 Schedule
+### News
 
-This demonstration is mainly for the CVPR 2022 virtual participants.  
+(2022.08.18.) We got the CVPR Hugging Face prize! Thank you all and special thanks to AK([@akhaliq](https://huggingface.co/akhaliq)).
 
-If you are attending in person, we will set up a special demonstration in the *Demo Area* during the following times:
-
-- 21st, June (Tue) 10:00 - 13:30
-- 22nd, June (Wed) 10:00 - 12:30
-- 23rd, June (Thu) 10:00 - 12:00
+<center>
+<img alt="we-got-huggingface-prize" src="https://github.com/deepkyu/ml-talking-face/blob/main/docs/we-got-huggingface-prize.jpeg?raw=true" width="50%" />
+</center>
